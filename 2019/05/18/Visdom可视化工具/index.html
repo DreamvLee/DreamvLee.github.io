@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Visdom可视化工具 - DreamLee&#39;s blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="安装$ pip install visdom
+启动服务python -m visdom.server  
+nohup python -m visdom.server &amp;amp;(后台)
+当命令行出现,"> 
+    <meta name="author" content="dreamLee"> 
+    <link rel="alternative" href="atom.xml" title="DreamLee&#39;s blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">DreamLee&#39;s blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="https://dreamvlee.github.io"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Visdom可视化工具</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Visdom可视化工具</h1>
+        <div class="stuff">
+            <span>五月 18, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/pytorch-visdom/">pytorch,visdom</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><pre><code>$ pip install visdom
+</code></pre><h1 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h1><pre><code>python -m visdom.server  
+nohup python -m visdom.server &amp;(后台)
+</code></pre><p>当命令行出现下面的信息时，visdom即可正常使用<br>    Checking for scripts.<br>    It’s Alive!<br>    INFO:root:Application Started<br>    You can navigate to <a href="http://localhost:8097" target="_blank" rel="noopener">http://localhost:8097</a></p>
+<h1 id="远程访问"><a href="#远程访问" class="headerlink" title="远程访问"></a>远程访问</h1><ol>
+<li>直接在服务器端运行visdom，在远程通过服务器域名来访问。</li>
+<li>通过ssl远程连接服务器<br> <code>ssh -L 18097:127.0.0.1:8097 username@remote_server_ip</code><br> 其中：18097:127.0.0.1代表自己机器上的18097号端口，8097是服务器上visdom使用的端口。<br> 然后在本地浏览器中输入地址：127.0.0.1:18097即可  </li>
+</ol>
+<h1 id="错误集锦"><a href="#错误集锦" class="headerlink" title="错误集锦"></a>错误集锦</h1><p>##[Errno 113] No route to host<br>如果服务器安装了iptables防火墙，那有可能server端的防火墙设置了过滤规则，即解决办法使用iptables关闭server端的防火墙。  </p>
+<pre><code>1.暂时关闭
+$sudo service iptables stop    
+2.打开    
+$sudo service iptables start   
+3.永久打开和关闭   
+$sudo chkconfig iptables on   
+$sudo chkconfig iptables off
+</code></pre><blockquote>
+<p>Linux下检测本机的端口是否被占用：<br>netstat –apn | grep 8080</p>
+</blockquote>
+<p>在网络上寻找各种方案，尝试之后都不行。只能去看源码了，</p>
+<pre><code>def __init__(
+    self,
+    server=&apos;http://localhost&apos;,
+    endpoint=&apos;events&apos;,
+    port=8097,
+    base_url=&apos;/&apos;,
+    ipv6=True,
+    http_proxy_host=None,
+    http_proxy_port=None,
+    env=&apos;main&apos;,
+    send=True,
+    raise_exceptions=None,
+    use_incoming_socket=True,
+    log_to_filename=None,
+    username=None,
+    password=None,
+    proxies=None
+):
+</code></pre><p>命令行报错信息为：<br> HTTPConnectionPool(<strong>host=’localhost’</strong>, port=8097): Max retries exceeded with url: /events (Caused by NewConnectionError(‘&lt;urllib3.connection.HTTPConnection object at 0x7f7ba1d5e3d0&gt;: Failed to establish a new connection: [Errno 113] No route to host’,))<br>之前是通过默认方式创建visdom对象：  </p>
+<pre><code>vis = visdom.Visdom()  
+改为：
+vis = visdom.Visdom(server=&quot;remote_server_ip&quot;)
+</code></pre><p>然后命令行，只出现了WARNING  </p>
+<pre><code>WARNING:root:Setting up a new session...
+</code></pre>
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a data-d="false">查看评论</div>
+
+
+    </div>
+    
+        <div class="side">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-number">1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#启动服务"><span class="toc-number">2.</span> <span class="toc-text">启动服务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#远程访问"><span class="toc-number">3.</span> <span class="toc-text">远程访问</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#错误集锦"><span class="toc-number">4.</span> <span class="toc-text">错误集锦</span></a></li></ol>
+        </div>
+    
+</div>
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
